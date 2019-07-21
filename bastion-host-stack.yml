@@ -1,0 +1,62 @@
+Description:
+    Arthit Chinnachot - Udacity Cloud DevOps Engineer
+    
+Parameters:
+    EnvironmentName:
+        Description: Enter VPC ID
+        Type: String
+    PublicSubnet1ID:
+        Description: Enter Subnet ID for Public Subnet 1
+        Type: String
+    KeyName:
+        Description: EC2 KeyPair to enable SSH access to the instances (Created in advanced)
+        Type: AWS::EC2::KeyPair::KeyName
+
+Resources:
+  SecurityGroupBastion:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref EnvironmentName
+      GroupDescription: Bastion security group
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+      Tags:
+        -   Key: Name
+            Value: !Sub ${EnvironmentName}-bastion-sg
+
+  BastionNode:
+    Type: AWS::EC2::Instance
+    Properties:
+      BlockDeviceMappings:
+        - DeviceName: "/dev/xvda"
+          Ebs:
+            VolumeSize: 24
+            VolumeType: gp2
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-bastion
+      ImageId: ami-005bdb005fb00e791
+      InstanceType: t2.micro
+      KeyName: !Ref KeyName
+      SubnetId: !Ref PublicSubnet1ID
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      SecurityGroupIds:
+        - Ref: SecurityGroupBastion
+
+
+Outputs:
+  BastionIP:
+      Description: Bastion Public IP
+      Value: !GetAtt BastionNode.PublicIp
+      Export:
+        Name: !Sub "${AWS::StackName}-bastion-public-ip"
+  BastionDNS:
+    Description: Bastion DNS
+    Value: !GetAtt BastionNode.PublicDnsName
+    Export:
+      Name: !Sub "${AWS::StackName}-bastion-public-dns"
+
+
