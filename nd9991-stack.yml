@@ -206,6 +206,25 @@ Resources:
         -   Key: Name
             Value: !Sub ${EnvironmentName}-web-server-sg
 
+  SecurityGroupELB:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref 'VPC'
+      GroupDescription: ELB security group
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 10.100.0.0/16
+      Tags:
+        -   Key: Name
+            Value: !Sub ${EnvironmentName}-elb-sg
+
 ### ELB
 
   LoadBalancer:
@@ -215,7 +234,7 @@ Resources:
         - Ref: PublicSub1
         - Ref: PublicSub2
       SecurityGroups:
-        - Ref: SecurityGroupWeb
+        - Ref: SecurityGroupELB
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName}-lb
