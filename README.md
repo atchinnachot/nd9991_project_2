@@ -1,6 +1,6 @@
 # nd9991_project_2
 
-To create the stack** Log on to Amazon AWS Console, locate the CloudFormation page. Click on **Create stack** then upload **nd9991-stack.yml** template file and enter the following under **Specify stack details**
+**To create the stack** Log on to Amazon AWS Console, locate the CloudFormation page. Click on **Create stack** then upload **nd9991-stack.yml** template file and enter the following under **Specify stack details**
 
 - Stack name
 - EnvironmentName
